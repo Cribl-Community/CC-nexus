@@ -1,23 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import {
   isIntegrationEnabled,
   listIntegrationsForGroup,
   type IntegrationEnabledFilter,
   type IntegrationListEntry,
 } from '../api/integrationsApi'
+import IntegrationConfigPanel from '../components/IntegrationConfigPanel'
+import SplitPane from '../components/SplitPane'
 
 type LocationState = { groupName?: string }
 
 export default function IntegrationsListPage() {
   const { groupId: groupIdParam } = useParams()
   const groupId = groupIdParam ? decodeURIComponent(groupIdParam) : ''
-  const navigate = useNavigate()
   const location = useLocation()
   const groupName = (location.state as LocationState | null)?.groupName
 
@@ -26,8 +22,8 @@ export default function IntegrationsListPage() {
   const [loading, setLoading] = useState(true)
   const [enabledFilter, setEnabledFilter] =
     useState<IntegrationEnabledFilter>('enabled')
-  /** null = default order (by name from API); asc/desc = sort by integration type */
   const [typeSortDir, setTypeSortDir] = useState<'asc' | 'desc' | null>(null)
+  const [selected, setSelected] = useState<IntegrationListEntry | null>(null)
 
   const refresh = useCallback(async () => {
     if (!groupId) return
@@ -49,6 +45,7 @@ export default function IntegrationsListPage() {
 
   useEffect(() => {
     setTypeSortDir(null)
+    setSelected(null)
   }, [groupId])
 
   const title = groupName ?? groupId
@@ -83,58 +80,14 @@ export default function IntegrationsListPage() {
     })
   }
 
-  return (
-    <div className="dashboard">
-      <nav className="breadcrumb" aria-label="Breadcrumb">
-        <Link to="/">Worker groups</Link>
-        <span className="breadcrumb-sep" aria-hidden="true">
-          /
-        </span>
-        <span className="breadcrumb-current">{title}</span>
-      </nav>
+  function selectRow(r: IntegrationListEntry) {
+    setSelected((prev) =>
+      prev?.id === r.id && prev?.role === r.role ? null : r,
+    )
+  }
 
-      <header className="dashboard-header">
-        <div>
-          <h1>Integrations</h1>
-          <p className="dashboard-sub">
-            Sources and destinations configured for this worker group. Select a row
-            to view full configuration.
-          </p>
-        </div>
-        <div className="header-actions">
-          <div className="integrations-toolbar">
-            <label htmlFor="integration-enabled-filter">Show</label>
-            <select
-              id="integration-enabled-filter"
-              className="filter-select"
-              value={enabledFilter}
-              onChange={(e) =>
-                setEnabledFilter(e.target.value as IntegrationEnabledFilter)
-              }
-              aria-label="Filter by enabled or disabled integrations"
-            >
-              <option value="enabled">Enabled</option>
-              <option value="disabled">Disabled</option>
-              <option value="all">All</option>
-            </select>
-          </div>
-          <button
-            type="button"
-            className="refresh"
-            onClick={() => void refresh()}
-            disabled={loading}
-          >
-            {loading ? 'Loading…' : 'Refresh'}
-          </button>
-        </div>
-      </header>
-
-      {error ? (
-        <div className="panel error" role="alert">
-          {error}
-        </div>
-      ) : null}
-
+  const table = (
+    <div className="list-pane">
       <div className="table-wrap">
         <table className="data-table">
           <thead>
@@ -202,55 +155,112 @@ export default function IntegrationsListPage() {
                 </td>
               </tr>
             ) : null}
-            {displayRows.map((r) => (
-              <tr
-                key={`${r.role}-${r.id}`}
-                className="click-row"
-                tabIndex={0}
-                onClick={() =>
-                  navigate(
-                    `/group/${encodeURIComponent(groupId)}/integration/${r.role}/${encodeURIComponent(r.id)}`,
-                    {
-                      state: {
-                        groupName,
-                        integrationName: r.name,
-                        integrationConfig: r.config,
-                      },
-                    },
-                  )
-                }
-                onKeyDown={(ev) => {
-                  if (ev.key === 'Enter' || ev.key === ' ') {
-                    ev.preventDefault()
-                    navigate(
-                      `/group/${encodeURIComponent(groupId)}/integration/${r.role}/${encodeURIComponent(r.id)}`,
-                      {
-                        state: {
-                          groupName,
-                          integrationName: r.name,
-                          integrationConfig: r.config,
-                        },
-                      },
-                    )
-                  }
-                }}
-              >
-                <td>
-                  <span className="wg-name">{r.name}</span>
-                  <span className="wg-id">{r.id}</span>
-                  {r.disabled ? (
-                    <span className="badge badge-disabled">disabled</span>
-                  ) : null}
-                </td>
-                <td>
-                  <code className="type-tag">{r.type}</code>
-                </td>
-                <td>{r.role === 'input' ? 'Source' : 'Destination'}</td>
-              </tr>
-            ))}
+            {displayRows.map((r) => {
+              const isSelected =
+                selected?.id === r.id && selected?.role === r.role
+              return (
+                <tr
+                  key={`${r.role}-${r.id}`}
+                  className={`click-row${isSelected ? ' row-selected' : ''}`}
+                  tabIndex={0}
+                  aria-selected={isSelected}
+                  onClick={() => selectRow(r)}
+                  onKeyDown={(ev) => {
+                    if (ev.key === 'Enter' || ev.key === ' ') {
+                      ev.preventDefault()
+                      selectRow(r)
+                    }
+                  }}
+                >
+                  <td>
+                    <span className="wg-name">{r.name}</span>
+                    <span className="wg-id">{r.id}</span>
+                    {r.disabled ? (
+                      <span className="badge badge-disabled">disabled</span>
+                    ) : null}
+                  </td>
+                  <td>
+                    <code className="type-tag">{r.type}</code>
+                  </td>
+                  <td>{r.role === 'input' ? 'Source' : 'Destination'}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
+    </div>
+  )
+
+  return (
+    <div className="dashboard">
+      <nav className="breadcrumb" aria-label="Breadcrumb">
+        <Link to="/">Worker groups</Link>
+        <span className="breadcrumb-sep" aria-hidden="true">
+          /
+        </span>
+        <span className="breadcrumb-current">{title}</span>
+      </nav>
+
+      <header className="dashboard-header">
+        <div>
+          <h1>Integrations</h1>
+          <p className="dashboard-sub">
+            Sources and destinations configured for this worker group. Select a
+            row to view its configuration.
+          </p>
+        </div>
+        <div className="header-actions">
+          <div className="integrations-toolbar">
+            <label htmlFor="integration-enabled-filter">Show</label>
+            <select
+              id="integration-enabled-filter"
+              className="filter-select"
+              value={enabledFilter}
+              onChange={(e) =>
+                setEnabledFilter(e.target.value as IntegrationEnabledFilter)
+              }
+              aria-label="Filter by enabled or disabled integrations"
+            >
+              <option value="enabled">Enabled</option>
+              <option value="disabled">Disabled</option>
+              <option value="all">All</option>
+            </select>
+          </div>
+          <button
+            type="button"
+            className="refresh"
+            onClick={() => void refresh()}
+            disabled={loading}
+          >
+            {loading ? 'Loading…' : 'Refresh'}
+          </button>
+        </div>
+      </header>
+
+      {error ? (
+        <div className="panel error" role="alert">
+          {error}
+        </div>
+      ) : null}
+
+      {selected ? (
+        <SplitPane
+          left={table}
+          right={
+            <IntegrationConfigPanel
+              groupId={groupId}
+              role={selected.role}
+              integrationId={selected.id}
+              integrationName={selected.name}
+              initialConfig={selected.config}
+              onClose={() => setSelected(null)}
+            />
+          }
+        />
+      ) : (
+        table
+      )}
     </div>
   )
 }
