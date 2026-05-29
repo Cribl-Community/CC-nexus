@@ -1,53 +1,43 @@
-# Split-Pane Integrations View — Plan
+# JSON Viewer Component — Plan
 
-## Overview
+## Approach
 
-Convert the integrations list + detail flow from a "navigate to full-page detail" pattern into a **split-pane layout** within `IntegrationsListPage`. Clicking a row selects it (highlighted), and a resizable splitter reveals the config panel on the right — no page navigation.
+Build a **custom lightweight recursive JSON tree viewer** rather than pulling in a library.
+This keeps the bundle small and lets us use the app's existing CSS variables for theming
+(including dark mode support) without fighting a third-party stylesheet.
 
-The existing `IntegrationDetailPage` route stays intact for direct URL deep-linking.
+---
+
+## What it will look like
+
+- Collapsible objects `{}` and arrays `[]` with a toggle arrow
+- Objects collapsed show `{ 3 keys }`, arrays show `[ 5 items ]`
+- All nodes expanded by default (up to a reasonable depth)
+- Syntax-colored primitives:
+  - Strings → green
+  - Numbers → blue
+  - Booleans → orange
+  - `null` → gray/muted
+- Key names styled distinctly from values
+- A **Copy JSON** button at the root level
 
 ---
 
 ## Tasks
 
-1. **Extract a shared `IntegrationConfigPanel` component**
-   - Lives in `src/components/IntegrationConfigPanel.tsx`
-   - Accepts `groupId`, `role`, `integrationId`, `integrationConfig` (pre-loaded config), and a `onRefresh` callback
-   - Renders the header (name, role badge, enabled status) + JSON `<pre>` block
-   - Reuses the same `loadIntegrationConfig` / `isIntegrationConfigEnabled` logic currently in `IntegrationDetailPage`
+1. **`src/components/JsonViewer.tsx`** — recursive React component
+   - `JsonNode` handles objects, arrays, and primitives
+   - Local `useState` per node for expand/collapse
+   - Keyboard accessible (Enter/Space to toggle)
 
-2. **Add a draggable `SplitPane` component**
-   - Lives in `src/components/SplitPane.tsx`
-   - Pure CSS + a `mousedown` drag handler — no third-party library
-   - Left panel has a min-width (e.g. 320 px); right panel fills the rest
-   - Drag handle is a thin vertical bar with a visible grab cursor
-   - Stores split ratio in local state (starts 40 % / 60 %)
+2. **`src/components/JsonViewer.css`** — syntax highlight styles
+   - Uses CSS variables so dark mode works automatically
 
-3. **Refactor `IntegrationsListPage` to use the split pane**
-   - Track `selectedRow: IntegrationListEntry | null` in state (initially `null`)
-   - Clicking a row sets `selectedRow` instead of calling `navigate()`
-   - When `selectedRow` is non-null, render the list + `SplitPane` + `IntegrationConfigPanel`
-   - Highlight the selected row with an `aria-selected` + CSS class
-   - Add an "×" close button at the top of the config panel to deselect
-   - Keep URL unchanged (no navigation), breadcrumb stays on the list page
-
-4. **Update `IntegrationDetailPage`**
-   - No functional changes; it remains available for direct URL access
-   - Optionally reuse `IntegrationConfigPanel` internally to reduce duplication
-
-5. **CSS additions in `App.css`**
-   - `.split-pane` — flex row, full height
-   - `.split-pane-left` / `.split-pane-right` — flex children with overflow
-   - `.split-handle` — the draggable divider (4 px wide, hover accent color)
-   - `.row-selected` — highlight style for the selected table row
-   - Shrink `.table-wrap` overflow when inside the left pane so the table doesn't force horizontal scroll
+3. **Update `IntegrationConfigPanel`** — swap the `<pre>` block for `<JsonViewer>`
 
 ---
 
 ## What stays the same
 
-- All existing routes and URL structure
-- Worker groups page
-- Filter / sort logic
-- `IntegrationDetailPage` (direct URL navigation still works)
-- All API modules
+- All existing routes, pages, and API modules
+- The `<pre>` fallback in `IntegrationDetailPage` (direct URL view) — can update that too if you like
