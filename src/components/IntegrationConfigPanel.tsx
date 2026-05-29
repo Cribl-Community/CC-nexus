@@ -4,6 +4,7 @@ import {
   loadIntegrationConfig,
   type IntegrationRole,
 } from '../api/integrationsApi'
+import JsonViewer from './JsonViewer'
 
 interface Props {
   groupId: string
@@ -46,11 +47,6 @@ export default function IntegrationConfigPanel({
       void load()
     }
   }, [initialConfig, load])
-
-  const json =
-    config !== null && config !== undefined
-      ? JSON.stringify(config, null, 2)
-      : ''
 
   const configEnabled =
     config !== null && config !== undefined
@@ -96,11 +92,9 @@ export default function IntegrationConfigPanel({
 
       {loading ? (
         <p className="muted">Loading configuration…</p>
-      ) : (
-        <pre className="config-json" tabIndex={0}>
-          {json}
-        </pre>
-      )}
+      ) : config !== null && config !== undefined ? (
+        <JsonViewer data={config} />
+      ) : null}
     </div>
   )
 }
