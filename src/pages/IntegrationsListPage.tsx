@@ -81,9 +81,7 @@ export default function IntegrationsListPage() {
   }
 
   function selectRow(r: IntegrationListEntry) {
-    setSelected((prev) =>
-      prev?.id === r.id && prev?.role === r.role ? null : r,
-    )
+    setSelected(r)
   }
 
   const table = (
@@ -249,12 +247,12 @@ export default function IntegrationsListPage() {
           left={table}
           right={
             <IntegrationConfigPanel
+              key={`${selected.role}-${selected.id}`}
               groupId={groupId}
               role={selected.role}
               integrationId={selected.id}
               integrationName={selected.name}
               initialConfig={selected.config}
-              onClose={() => setSelected(null)}
             />
           }
         />

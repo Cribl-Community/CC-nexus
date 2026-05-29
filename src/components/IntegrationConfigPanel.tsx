@@ -12,7 +12,6 @@ interface Props {
   integrationName?: string
   /** Pre-loaded config from the list payload — avoids an extra fetch. */
   initialConfig?: unknown
-  onClose: () => void
 }
 
 export default function IntegrationConfigPanel({
@@ -21,15 +20,13 @@ export default function IntegrationConfigPanel({
   integrationId,
   integrationName,
   initialConfig,
-  onClose,
 }: Props) {
   const [config, setConfig] = useState<unknown>(initialConfig ?? null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(initialConfig === undefined)
 
   const load = useCallback(
-    async (forceNetwork: boolean) => {
-      if (!forceNetwork && config !== null) return
+    async () => {
       setLoading(true)
       setError(null)
       try {
@@ -41,15 +38,14 @@ export default function IntegrationConfigPanel({
         setLoading(false)
       }
     },
-    [groupId, role, integrationId, config],
+    [groupId, role, integrationId],
   )
 
   useEffect(() => {
     if (initialConfig === undefined) {
-      void load(true)
+      void load()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupId, role, integrationId])
+  }, [initialConfig, load])
 
   const json =
     config !== null && config !== undefined
@@ -82,24 +78,14 @@ export default function IntegrationConfigPanel({
             ) : null}
           </span>
         </div>
-        <div className="config-panel-actions">
-          <button
-            type="button"
-            className="refresh"
-            onClick={() => void load(true)}
-            disabled={loading}
-          >
-            {loading ? 'Loading…' : 'Refresh'}
-          </button>
-          <button
-            type="button"
-            className="config-panel-close"
-            onClick={onClose}
-            aria-label="Close config panel"
-          >
-            ×
-          </button>
-        </div>
+        <button
+          type="button"
+          className="refresh"
+          onClick={() => void load()}
+          disabled={loading}
+        >
+          {loading ? 'Loading…' : 'Refresh'}
+        </button>
       </div>
 
       {error ? (
