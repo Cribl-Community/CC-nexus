@@ -30,7 +30,9 @@ export default function IntegrationsListPage() {
     setLoading(true)
     setError(null)
     try {
-      setRows(await listIntegrationsForGroup(groupId))
+      const data = await listIntegrationsForGroup(groupId)
+      setRows(data)
+      setSelected((prev) => prev ?? data[0] ?? null)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
       setRows(null)
