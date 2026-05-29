@@ -1,0 +1,261 @@
+.dashboard {
+  text-align: left;
+  padding: 24px 28px 48px;
+  flex: 1;
+}
+
+.dashboard-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.integrations-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.integrations-toolbar label {
+  color: var(--text-h);
+  font-weight: 500;
+}
+
+.filter-select {
+  font: inherit;
+  font-size: 15px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.filter-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.dashboard h1 {
+  font-size: 28px;
+  letter-spacing: -0.5px;
+  margin: 0 0 8px;
+}
+
+.dashboard-sub {
+  max-width: 52ch;
+  margin: 0;
+  font-size: 15px;
+  line-height: 145%;
+}
+
+.refresh {
+  font: inherit;
+  font-size: 15px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-h);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+}
+
+.refresh:hover:not(:disabled) {
+  border-color: var(--accent-border);
+}
+
+.refresh:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.panel.error {
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  background: color-mix(in srgb, #ef4444 12%, transparent);
+  border: 1px solid color-mix(in srgb, #ef4444 35%, transparent);
+  color: var(--text-h);
+  font-size: 14px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg) 92%, var(--border));
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table th {
+  font-weight: 600;
+  color: var(--text-h);
+  background: var(--code-bg);
+  white-space: nowrap;
+}
+
+.th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.th-sort:hover {
+  color: var(--accent);
+}
+
+.th-sort:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.th-sort-indicator {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover td {
+  background: var(--accent-bg);
+}
+
+.data-table tbody tr.click-row:hover td {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.click-row {
+  cursor: pointer;
+}
+
+.click-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.wg-name {
+  display: block;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.wg-id {
+  display: block;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.muted {
+  color: var(--text);
+  font-style: italic;
+}
+
+.data-table code {
+  font-size: 13px;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.breadcrumb a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-sep {
+  margin: 0 8px;
+  opacity: 0.5;
+}
+
+.breadcrumb-current {
+  color: var(--text-h);
+  font-weight: 500;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  vertical-align: middle;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.badge-disabled {
+  background: color-mix(in srgb, #6b7280 22%, transparent);
+  color: var(--text-h);
+}
+
+.badge-enabled {
+  background: color-mix(in srgb, #22c55e 20%, transparent);
+  color: var(--text-h);
+}
+
+.type-tag {
+  font-size: 13px;
+}
+
+.config-json {
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow: auto;
+  max-width: 100%;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
