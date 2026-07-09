@@ -22,8 +22,7 @@ Managing integrations across many worker groups means hopping between group cont
 
 1. Log in to Cribl and then click on **Apps->View All**
 2. Click **Add App->Import from Git**.
-3. Find the latest release tag, this is the latest release number under Releases.
-3. Paste the repo url and release tag (make sure to include the v).
+3. Paste the repo url and "latest" for the release tag.
 4. Click **Import**.
 
 ---
