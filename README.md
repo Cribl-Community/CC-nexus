@@ -2,6 +2,8 @@
 
 Nexus is an app that gives you a streamlined view of every source and destination configured across all your worker groups — and lets you edit them — from a single place.
 
+<img width="1277" height="811" alt="Screenshot 2026-07-08 at 7 23 30 PM" src="https://github.com/user-attachments/assets/27c0eb24-9c99-40b9-a725-72a9c7356cbb" />
+
 ---
 
 ## What Nexus does
