@@ -1,6 +1,6 @@
 # Cribl Nexus — Integration Hub
 
-Nexus is a [Cribl App Platform](https://docs.cribl.io/stream/app-platform/) app that gives you a unified view of every source and destination configured across all your worker groups — and lets you edit them — from a single place, without leaving Cribl Stream.
+Nexus is an app that gives you a streamlined view of every source and destination configured across all your worker groups — and lets you edit them — from a single place.
 
 ---
 
