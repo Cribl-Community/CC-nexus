@@ -1,53 +1,84 @@
+/* ── Cribl Nexus — dark design system ────────────────────────── */
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* Surface layers — warm dark navy, matching Cribl product UI */
+  --bg:       #0e1017;
+  --bg-2:     #131622;
+  --bg-3:     #181b28;
+  --bg-4:     #1d2030;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* Borders */
+  --border:         #252838;
+  --border-subtle:  #1c1f2e;
+  --border-accent:  rgba(71, 191, 255, 0.22);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
+  /* Text — brighter, easier to read */
+  --text:       #8b8fa8;
+  --text-h:     #e8eaf6;
+  --text-muted: #4e5270;
+
+  /* Cribl purple — exact brand colors from Cribl SVG assets */
+  --accent:        #863bff;   /* primary purple */
+  --accent-mid:    #aa3bff;   /* icon purple */
+  --accent-bright: #c084ff;   /* pale purple */
+  --accent-deep:   #7e14ff;   /* deep purple */
+  --accent-light:  #ede6ff;   /* lavender white */
+  --accent-bg:     rgba(134, 59, 255, 0.08);
+  --accent-border: rgba(134, 59, 255, 0.38);
+  --accent-glow:   rgba(134, 59, 255, 0.18);
+
+  /* Cribl blue — exact brand color */
+  --blue:        #47bfff;
+  --blue-bg:     rgba(71, 191, 255, 0.07);
+  --blue-border: rgba(71, 191, 255, 0.25);
+
+  /* Status */
+  --green:       #4ade80;
+  --green-bg:    rgba(74, 222, 128, 0.09);
+  --green-border: rgba(74, 222, 128, 0.28);
+  --red:         #f87171;
+  --red-bg:      rgba(248, 113, 113, 0.08);
+  --red-border:  rgba(248, 113, 113, 0.28);
+
+  /* Code */
+  --code-bg: #090b14;
+  /* JSON syntax — derived from Cribl brand palette */
+  --json-key:     #c084ff;   /* Cribl pale purple */
+  --json-string:  #47bfff;   /* Cribl blue */
+  --json-number:  #aa3bff;   /* Cribl icon purple */
+  --json-boolean: #ede6ff;   /* Cribl lavender */
+  --json-null:    #3d4060;   /* muted slate */
+
+  /* Misc */
+  --mono: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --sans: system-ui, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 24px rgba(134, 59, 255, 0.14);
+  --radius: 8px;
+
+  font: 14px/150% var(--sans);
+  letter-spacing: 0.1px;
+  color-scheme: dark;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+/* Always dark */
+@media (prefers-color-scheme: light) {
+  :root { color-scheme: dark; }
+}
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg);
 }
 
 #root {
@@ -59,53 +90,134 @@
   overflow: hidden;
 }
 
-html,
-body {
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-}
-
 h1,
 h2 {
   font-family: var(--heading);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-h);
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
   font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  margin: 0 0 6px;
+  color: var(--text-h);
 }
+
+h2 {
+  font-size: 18px;
+  letter-spacing: -0.2px;
+  margin: 0 0 6px;
+}
+
 p {
   margin: 0;
 }
 
-code,
-.counter {
+code {
   font-family: var(--mono);
-  display: inline-flex;
+  font-size: 12px;
+  line-height: 130%;
+  padding: 2px 6px;
   border-radius: 4px;
-  color: var(--text-h);
+  background: var(--blue-bg);
+  border: 1px solid var(--blue-border);
+  color: var(--blue);
+  display: inline;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* ── Nexus app shell ────────────────────────────────────────── */
+
+.nexus-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.nexus-topbar {
+  height: 50px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
+}
+
+/* Ambient glow in the top-right of the bar */
+.nexus-topbar::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -40px;
+  width: 280px;
+  height: 120px;
+  background: radial-gradient(ellipse, rgba(134, 59, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.nexus-topbar-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.nexus-brand {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  background: linear-gradient(135deg, var(--accent-bright) 0%, var(--blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
+}
+
+.nexus-topbar-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+.nexus-topbar-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.nexus-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Subtle ambient radial glow in the main content area */
+.nexus-main::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -60px;
+  width: 500px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(134, 59, 255, 0.04) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
 }

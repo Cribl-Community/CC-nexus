@@ -79,10 +79,20 @@ The config panel shows the raw configuration object for a single integration.
 
 Click **Edit** on any integration config to switch to edit mode. The JSON is loaded into a text editor where you can make changes directly.
 
-- **Save** — validates the JSON, then PATCHes the change to Cribl Stream. The change is **staged but not committed** — an operator must commit and deploy from Cribl Stream before the change reaches workers. This is intentional: Nexus gives you an editing interface, but the approval and rollout step stays in Cribl Stream.
+- **Save** — validates the JSON. If valid, a modal appears asking for a commit message before anything is sent to Cribl Stream.
 - **Cancel** — discards your edits and returns to the read-only view with no changes made.
 
-If the JSON is malformed when you click Save, an inline error is shown and nothing is sent to the API.
+If the JSON is malformed when you click Save, an inline error is shown and the modal does not open.
+
+#### Commit message modal
+
+After clicking Save, a modal prompts you for a commit message describing the change. The message is optional — if left blank, a default message is used (`Updated {name} via Cribl Nexus`).
+
+Clicking **Save & commit** does two things in sequence:
+1. PATCHes the updated config to Cribl Stream
+2. POSTs a named commit to Cribl's config store
+
+The commit shows up immediately in **Commit & Deploy** in Cribl Stream, giving operators a clear audit trail and the ability to review before deploying to workers.
 
 ---
 
