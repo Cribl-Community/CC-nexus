@@ -79,37 +79,8 @@ The config panel shows the raw configuration object for a single integration.
 
 Click **Edit** on any integration config to switch to edit mode. The JSON is loaded into a text editor where you can make changes directly.
 
-- **Save** — validates the JSON. If valid, a modal appears asking for a commit message before anything is sent to Cribl Stream.
+- **Save** — validates the JSON and then persists to Cribl. The change will show as a pending commit on your Cribl instnace.
 - **Cancel** — discards your edits and returns to the read-only view with no changes made.
 
 If the JSON is malformed when you click Save, an inline error is shown and the modal does not open.
 
-#### Commit message modal
-
-After clicking Save, a modal prompts you for a commit message describing the change. The message is optional — if left blank, a default message is used (`Updated {name} via Cribl Nexus`).
-
-Clicking **Save & commit** does two things in sequence:
-1. PATCHes the updated config to Cribl Stream
-2. POSTs a named commit to Cribl's config store
-
-The commit shows up immediately in **Commit & Deploy** in Cribl Stream, giving operators a clear audit trail and the ability to review before deploying to workers.
-
----
-
-## Navigation
-
-Nexus uses a breadcrumb trail at the top of every screen so you can jump back without losing context:
-
-```
-Worker groups  /  my-group  /  my-source
-```
-
-- Click **Worker groups** to return to the dashboard.
-- Click the group name to return to its integrations list.
-
----
-
-## Notes
-
-- Integration counts on the dashboard are fetched in parallel after the worker group list loads; a `—` means the count could not be retrieved for that group.
-- All API calls are scoped to your Cribl Stream deployment and proxied through the platform — no credentials are stored or handled by the app.
