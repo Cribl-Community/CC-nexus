@@ -1,0 +1,2 @@
+# No external API calls — this app only talks to the Cribl API
+# via CRIBL_API_URL (proxied automatically by the platform).
