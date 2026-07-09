@@ -1,5 +1,6 @@
 import {
   criblGet,
+  criblPatch,
   extractObjectList,
   strField,
   type UnknownRecord,
@@ -117,6 +118,16 @@ export async function listIntegrationsForGroup(
   return merged
 }
 
+/** Unwraps a single-item API envelope ({ items: [...] }) to the config object inside. */
+function unwrapSingleItem(payload: unknown, integrationId: string): unknown {
+  const items = extractObjectList(payload)
+  if (items.length > 0) {
+    const match = items.find((x) => strField(x, ['id']) === integrationId)
+    return match ?? items[0]
+  }
+  return payload
+}
+
 export async function loadIntegrationConfig(
   groupId: string,
   role: IntegrationRole,
@@ -126,7 +137,8 @@ export async function loadIntegrationConfig(
   const encId = encodeURIComponent(integrationId)
   const collection = role === 'input' ? 'inputs' : 'outputs'
   try {
-    return await criblGet(`/m/${encG}/system/${collection}/${encId}`)
+    const payload = await criblGet(`/m/${encG}/system/${collection}/${encId}`)
+    return unwrapSingleItem(payload, integrationId)
   } catch {
     const payload = await criblGet<unknown>(`/m/${encG}/system/${collection}`)
     const items = extractObjectList(payload)
@@ -138,4 +150,18 @@ export async function loadIntegrationConfig(
     }
     return found
   }
+}
+
+/** Stages a config update for a single source or destination (no commit/deploy). */
+export async function updateIntegrationConfig(
+  groupId: string,
+  role: IntegrationRole,
+  integrationId: string,
+  config: unknown,
+): Promise<unknown> {
+  const encG = encodeURIComponent(groupId)
+  const encId = encodeURIComponent(integrationId)
+  const collection = role === 'input' ? 'inputs' : 'outputs'
+  const payload = await criblPatch(`/m/${encG}/system/${collection}/${encId}`, config)
+  return unwrapSingleItem(payload, integrationId)
 }

@@ -24,6 +24,7 @@ export default function IntegrationsListPage() {
     useState<IntegrationEnabledFilter>('enabled')
   const [typeSortDir, setTypeSortDir] = useState<'asc' | 'desc' | null>(null)
   const [selected, setSelected] = useState<IntegrationListEntry | null>(null)
+  const [search, setSearch] = useState('')
 
   const refresh = useCallback(async () => {
     if (!groupId) return
@@ -61,8 +62,19 @@ export default function IntegrationsListPage() {
     })
   }, [rows, enabledFilter])
 
+  const searchedRows = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return filteredRows
+    return filteredRows.filter(
+      (r) =>
+        r.name.toLowerCase().includes(q) ||
+        r.id.toLowerCase().includes(q) ||
+        r.type.toLowerCase().includes(q),
+    )
+  }, [filteredRows, search])
+
   const displayRows = useMemo(() => {
-    const list = [...filteredRows]
+    const list = [...searchedRows]
     if (typeSortDir === null) return list
     list.sort((a, b) => {
       const cmp = a.type.localeCompare(b.type, undefined, {
@@ -72,7 +84,7 @@ export default function IntegrationsListPage() {
       return typeSortDir === 'asc' ? cmp : -cmp
     })
     return list
-  }, [filteredRows, typeSortDir])
+  }, [searchedRows, typeSortDir])
 
   function cycleTypeSort() {
     setTypeSortDir((prev) => {
@@ -147,11 +159,12 @@ export default function IntegrationsListPage() {
             {!loading &&
             rows &&
             rows.length > 0 &&
-            filteredRows.length === 0 ? (
+            displayRows.length === 0 ? (
               <tr>
                 <td colSpan={3} className="muted">
-                  No integrations match this filter. Try &quot;All&quot; to see
-                  every source and destination.
+                  {search.trim()
+                    ? 'No integrations match your search.'
+                    : 'No integrations match this filter. Try \u201cAll\u201d to see every source and destination.'}
                 </td>
               </tr>
             ) : null}
@@ -203,12 +216,16 @@ export default function IntegrationsListPage() {
       </nav>
 
       <header className="dashboard-header">
-        <div>
+        <div className="dashboard-header-left">
           <h1>Integrations</h1>
-          <p className="dashboard-sub">
-            Sources and destinations configured for this worker group. Select a
-            row to view its configuration.
-          </p>
+          <input
+            type="search"
+            className="search-input search-input--wide"
+            placeholder="Search integrations…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search integrations by name, ID, or type"
+          />
         </div>
         <div className="header-actions">
           <div className="integrations-toolbar">

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   isIntegrationConfigEnabled,
   loadIntegrationConfig,
+  updateIntegrationConfig,
   type IntegrationRole,
 } from '../api/integrationsApi'
 import JsonViewer from './JsonViewer'
@@ -26,21 +27,23 @@ export default function IntegrationConfigPanel({
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(initialConfig === undefined)
 
-  const load = useCallback(
-    async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        setConfig(await loadIntegrationConfig(groupId, role, integrationId))
-      } catch (e) {
-        setError(e instanceof Error ? e.message : String(e))
-        setConfig(null)
-      } finally {
-        setLoading(false)
-      }
-    },
-    [groupId, role, integrationId],
-  )
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState('')
+  const [parseError, setParseError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      setConfig(await loadIntegrationConfig(groupId, role, integrationId))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+      setConfig(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [groupId, role, integrationId])
 
   useEffect(() => {
     if (initialConfig === undefined) {
@@ -52,6 +55,40 @@ export default function IntegrationConfigPanel({
     config !== null && config !== undefined
       ? isIntegrationConfigEnabled(config)
       : null
+
+  function startEdit() {
+    setDraft(JSON.stringify(config, null, 2))
+    setParseError(null)
+    setEditing(true)
+  }
+
+  function cancelEdit() {
+    setEditing(false)
+    setDraft('')
+    setParseError(null)
+  }
+
+  async function save() {
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(draft)
+    } catch (e) {
+      setParseError(e instanceof Error ? e.message : 'Invalid JSON')
+      return
+    }
+    setParseError(null)
+    setSaving(true)
+    try {
+      const updated = await updateIntegrationConfig(groupId, role, integrationId, parsed)
+      setConfig(updated ?? parsed)
+      setEditing(false)
+      setDraft('')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <div className="config-panel">
@@ -74,14 +111,48 @@ export default function IntegrationConfigPanel({
             ) : null}
           </span>
         </div>
-        <button
-          type="button"
-          className="refresh"
-          onClick={() => void load()}
-          disabled={loading}
-        >
-          {loading ? 'Loading…' : 'Refresh'}
-        </button>
+
+        <div className="config-panel-actions">
+          {editing ? (
+            <>
+              <button
+                type="button"
+                className="btn-save"
+                onClick={() => void save()}
+                disabled={saving}
+              >
+                {saving ? 'Saving…' : 'Save'}
+              </button>
+              <button
+                type="button"
+                className="refresh"
+                onClick={cancelEdit}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="btn-edit"
+                onClick={startEdit}
+                disabled={loading || config === null || config === undefined}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                className="refresh"
+                onClick={() => void load()}
+                disabled={loading}
+              >
+                {loading ? 'Loading…' : 'Refresh'}
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {error ? (
@@ -90,7 +161,25 @@ export default function IntegrationConfigPanel({
         </div>
       ) : null}
 
-      {loading ? (
+      {editing ? (
+        <div className="config-edit-wrap">
+          {parseError ? (
+            <div className="parse-error" role="alert">
+              {parseError}
+            </div>
+          ) : null}
+          <textarea
+            className="config-edit-textarea"
+            value={draft}
+            onChange={(e) => {
+              setDraft(e.target.value)
+              if (parseError) setParseError(null)
+            }}
+            spellCheck={false}
+            aria-label="Edit integration configuration JSON"
+          />
+        </div>
+      ) : loading ? (
         <p className="muted">Loading configuration…</p>
       ) : config !== null && config !== undefined ? (
         <JsonViewer data={config} />
